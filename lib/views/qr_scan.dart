@@ -14,8 +14,8 @@ class QRScanPage extends StatefulWidget {
 class _QRScanPageState extends State<QRScanPage> {
   final ApiService api = ApiService();
   bool scanned = false;
-  String? scannedCode;
-  bool isScanned = false;
+  MobileScannerController scannerController = MobileScannerController();
+  bool torch = false;
 
   @override
   Widget build(BuildContext context) {
@@ -33,8 +33,12 @@ class _QRScanPageState extends State<QRScanPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text("QR Scan"),
-              SizedBox(height: 50),
+              Text("QR Scan",
+                  style: TextStyle(
+                    fontSize: 20,
+                    color: AppColors.primary2,
+                  )),
+              SizedBox(height: 30),
               SizedBox(
                 height: 200,
                 width: 200,
@@ -43,6 +47,7 @@ class _QRScanPageState extends State<QRScanPage> {
                   child: Builder(
                     builder: (context) {
                       return MobileScanner(
+                        controller: scannerController,
                         onDetect: (result) async {
                           if (scanned) return;
                           scanned = true;
@@ -76,6 +81,34 @@ class _QRScanPageState extends State<QRScanPage> {
                   ),
                 ),
               ),
+              SizedBox(height: 50),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  IconButton(
+                      onPressed: () {
+                        scannerController.toggleTorch();
+                        setState(() {
+                          torch = !torch;
+                        });
+                      },
+                      icon: Icon(
+                        torch ? Icons.flash_on : Icons.flash_off,
+                        color: AppColors.primary2,
+                      )),
+                  SizedBox(width: 85),
+                  IconButton(
+                      onPressed: () {
+                        scannerController.start();
+                        scannerController.switchCamera();
+                        scannerController.stop();
+                      },
+                      icon: Icon(
+                        Icons.cameraswitch_sharp,
+                        color: AppColors.primary2,
+                      ))
+                ],
+              )
             ],
           ),
         ));
